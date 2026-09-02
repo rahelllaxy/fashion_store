@@ -1,0 +1,18 @@
+<?php
+require_once 'Product.php';
+
+class FashionProduct extends Product {
+    private $category;
+    private $shopeeLink;
+
+    public function __construct($id, $name, $price, $image, $category, $shopeeLink = "#") {
+        // Memanggil constructor class induk
+        parent::__construct($id, $name, $price, $image);
+        $this->category = $category;
+        $this->shopeeLink = $shopeeLink;
+    }
+
+    public function getCategory() { return $this->category; }
+    public function getShopeeLink() { return $this->shopeeLink; }
+}
+?>
