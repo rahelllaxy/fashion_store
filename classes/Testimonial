@@ -1,0 +1,14 @@
+<?php
+class Testimonial {
+    private $customer;
+    private $review;
+
+    public function __construct($customer, $review) {
+        $this->customer = $customer;
+        $this->review = $review;
+    }
+
+    public function getCustomer() { return $this->customer; }
+    public function getReview() { return $this->review; }
+}
+?>
