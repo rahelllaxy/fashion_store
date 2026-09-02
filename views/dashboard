@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHER ADMIN PANEL</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #333; }
+        .header-nav { display: flex; gap: 25px; align-items: center; }
+        .header-nav a { font-weight: bold; text-decoration: none; transition: 0.3s; font-size: 14px; letter-spacing: 0.5px; }
+        .header-nav a.menu-link { color: white; }
+        .header-nav a.menu-link:hover { color: #aaa; }
+        .header-nav a.logout-btn { color: #ff4444; }
+        .header-nav a.logout-btn:hover { color: #cc0000; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 40px; }
+        .card { background: #111; padding: 30px; border-radius: 8px; border: 1px solid #222; }
+        .full-width { grid-column: 1 / -1; }
+        h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; letter-spacing: 1px; }
+        label { display: block; margin: 15px 0 5px 0; font-size: 14px; color: #ccc; }
+        input, select, textarea { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 4px; box-sizing: border-box; }
+        textarea { resize: vertical; height: 80px; }
+        button { margin-top: 20px; width: 100%; padding: 12px; background: white; color: black; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #222; }
+        th { background: #151515; color: #aaa; font-size: 14px; }
+        .btn-action { display: inline-block; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; margin-right: 5px; }
+        .btn-edit { background: #333; color: white; }
+        .btn-edit:hover { background: #444; }
+        .btn-delete { background: #ff4444; color: white; }
+        .btn-delete:hover { background: #cc0000; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>AETHER PANEL</h2>
+    <div class="header-nav">
+        <a href="index.php" class="menu-link" target="_blank">Lihat Toko</a>
+        <a href="admin.php?action=logout" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div class="card">
+        <h3>ADD NEW PRODUCT</h3>
+        <form action="admin.php?action=add" method="POST" enctype="multipart/form-data">
+            <label>ID Produk (Unique String, misal: kemeja-hitam)</label>
+            <input type="text" name="id" required>
+
+            <label>Nama Produk</label>
+            <input type="text" name="name" required>
+
+            <label>Kategori</label>
+            <select name="category">
+                <option value="kemeja-pria">Kemeja Pria</option>
+                <option value="kemeja-wanita">Kemeja Wanita</option>
+                <option value="parfum">Parfum</option>
+            </select>
+
+            <label>Harga (Rp)</label>
+            <input type="number" name="price" required>
+
+            <label>Link Shopee</label>
+            <input type="text" name="shopee" required>
+
+            <label>Gambar Produk</label>
+            <input type="file" name="image_file" required>
+
+            <button type="submit">SUBMIT PRODUCT</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>ADD NEW TESTIMONIAL</h3>
+        <form action="admin.php?action=addTestimonial" method="POST">
+            <label>Nama Customer</label>
+            <input type="text" name="customer_name" placeholder="Masukkan nama pembeli" required>
+
+            <label>Ulasan / Review</label>
+            <textarea name="review" placeholder="Tulis kepuasan pembeli disini..." required></textarea>
+
+            <label>Rating</label>
+            <select name="rating">
+                <option value="5">5 - Sangat Memuaskan</option>
+                <option value="4">4 - Puas</option>
+                <option value="3">3 - Cukup</option>
+                <option value="2">2 - Kurang Puas</option>
+                <option value="1">1 - Kecewa</option>
+            </select>
+
+            <button type="submit">SUBMIT TESTIMONIAL</button>
+        </form>
+    </div>
+
+    <div class="card full-width">
+        <h3>INVENTORY LIST</h3>
+        <table>
+            <tr>
+                <th>Image</th>
+                <th>Nama</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+            </tr>
+            <?php if (isset($stmt)): ?>
+                <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                <tr>
+                    <td>
+                        <img src="<?= htmlspecialchars($row['image']) ?>" style="width:50px;height:50px;object-fit:cover;border-radius:4px;">
+                    </td>
+                    <td><?= htmlspecialchars($row['name']) ?></td>
+                    <td>Rp <?= number_format($row['price'], 0, ',', '.') ?></td>
+                    <td>
+                        <a href="admin.php?action=edit&id=<?= urlencode($row['id']) ?>" class="btn-action btn-edit">Edit</a>
+                        <a href="admin.php?action=delete&id=<?= urlencode($row['id']) ?>" class="btn-action btn-delete" onclick="return confirm('Yakin ingin menghapus produk <?= htmlspecialchars($row['name']) ?> ?')">Delete</a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #666;">Belum ada produk terdaftar.</td>
+                </tr>
+            <?php endif; ?>
+        </table>
+    </div>
+
+    <div class="card full-width">
+        <h3>TESTIMONIAL LIST</h3>
+        <table>
+            <tr>
+                <th>Nama Customer</th>
+                <th>Ulasan</th>
+                <th>Rating</th>
+                <th>Aksi</th> <!-- Tambahan Kolom Aksi -->
+            </tr>
+            <?php if (isset($testiStmt) && $testiStmt->rowCount() > 0): ?>
+                <?php while ($rowTesti = $testiStmt->fetch(PDO::FETCH_ASSOC)): ?>
+                <tr>
+                    <td><?= htmlspecialchars($rowTesti['customer_name']) ?></td>
+                    <td><?= htmlspecialchars($rowTesti['review']) ?></td>
+                    <td><?= htmlspecialchars($rowTesti['rating']) ?> / 5 ★</td>
+                    <td>
+                        <!-- Tambahan Tombol Delete Testimoni -->
+                        <a href="admin.php?action=delete_testi&id=<?= urlencode($rowTesti['id']) ?>" class="btn-action btn-delete" onclick="return confirm('Yakin ingin menghapus testimoni dari <?= htmlspecialchars($rowTesti['customer_name']) ?> ?')">Delete</a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #666;">Belum ada testimoni masuk.</td>
+                </tr>
+            <?php endif; ?>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
