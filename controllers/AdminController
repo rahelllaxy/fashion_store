@@ -1,0 +1,202 @@
+<?php
+
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/ProductModel.php';
+
+class AdminController {
+
+    private $model;
+
+    public function __construct() {
+        $db = (new Database())->getConnection();
+        $this->model = new ProductModel($db);
+    }
+    public function dashboard() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+
+        $stmt = $this->model->readAll();
+        $testiStmt = $this->model->readTestimonials();
+        require_once __DIR__ . '/../views/dashboard.php';
+    }
+    public function login() {
+        if (isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=dashboard");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $username = $_POST['username'] ?? '';
+            $password = $_POST['password'] ?? '';
+
+            if ($username === 'admin' && $password === '123') {
+                $_SESSION['admin'] = true;
+                header("Location: admin.php?action=dashboard");
+                exit;
+            } else {
+                echo "
+                <script>
+                    alert('Username atau Password Salah!');
+                    window.location.href='admin.php?action=login';
+                </script>";
+                exit;
+            }
+        }
+        require_once __DIR__ . '/../views/login.php';
+    }
+    public function logout() {
+        session_destroy();
+        header("Location: index.php");
+        exit;
+    }
+    public function add() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if(!isset($_FILES['image_file']) || $_FILES['image_file']['error'] == UPLOAD_ERR_NO_FILE) {
+                echo "<script>alert('ERROR: File gambar tidak terdeteksi! Pastikan form menggunakan enctype=\"multipart/form-data\" dan name=\"image_file\"'); window.history.back();</script>";
+                exit;
+            }
+
+            $targetDir = __DIR__ . '/../assets/img/';
+            $fileName = time() . '_' . basename($_FILES['image_file']['name']);
+
+            if(move_uploaded_file($_FILES['image_file']['tmp_name'], $targetDir . $fileName)) {
+                $hargaBersih = str_replace(['.', ','], '', $_POST['price']);
+                try {
+                    $this->model->create(
+                        $_POST['id'],
+                        $_POST['name'],
+                        $_POST['category'],
+                        $hargaBersih,
+                        'assets/img/' . $fileName,
+                        $_POST['shopee']
+                    );
+                    header("Location: admin.php?action=dashboard");
+                    exit;
+                } catch (PDOException $e) {
+                    echo "<script>alert('Gagal menyimpan ke database! Pastikan ID tidak kembar. Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                    exit;
+                }
+            } else {
+                echo "<script>alert('Gagal memindahkan file gambar ke folder assets/img/.'); window.history.back();</script>";
+                exit;
+            }
+        }
+    }
+    public function edit() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+        $id = $_GET['id'] ?? '';
+        $product = $this->model->readOne($id);
+        require_once __DIR__ . '/../views/edit.php';
+    }
+    public function update() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id       = $_POST['id'];
+            $name     = $_POST['name'];
+            $category = $_POST['category'];
+            $price    = str_replace(['.', ','], '', $_POST['price']);
+            $shopee   = $_POST['shopee'];
+            $image    = $_POST['old_image'];
+
+            if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == 0) {
+                $targetDir = __DIR__ . '/../assets/img/';
+                $fileName = time() . '_' . basename($_FILES['image_file']['name']);
+                
+                if (move_uploaded_file($_FILES['image_file']['tmp_name'], $targetDir . $fileName)) {
+                    if (!empty($_POST['old_image'])) {
+                        $oldImagePath = __DIR__ . '/../' . $_POST['old_image'];
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath); 
+                        }
+                    }
+                    $image = 'assets/img/' . $fileName;
+                }
+            }
+
+            try {
+                $this->model->update($id, $name, $category, $price, $image, $shopee);
+                header("Location: admin.php?action=dashboard");
+                exit;
+            } catch (PDOException $e) {
+                echo "<script>alert('Gagal update database! Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                exit;
+            }
+        }
+    }
+    public function addTestimonial() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->model->addTestimonial(
+                $_POST['customer_name'],
+                $_POST['review'],
+                $_POST['rating']
+            );
+            header("Location: admin.php?action=dashboard");
+            exit;
+        }
+    }
+
+    public function delete() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+        if (!isset($_GET['id']) || empty($_GET['id'])) {
+            echo "<script>alert('ID Produk tidak ditemukan!'); window.location='admin.php?action=dashboard';</script>";
+            exit;
+        }
+        $id = trim($_GET['id']);
+        $product = $this->model->readOne($id);
+        if (!$product) {
+            echo "<script>alert('Produk tidak ditemukan!'); window.location='admin.php?action=dashboard';</script>";
+            exit;
+        }
+        if (!empty($product['image'])) {
+            $imagePath = __DIR__ . '/../' . $product['image'];
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        $this->model->delete($id);
+        echo "<script>alert('Produk berhasil dihapus!'); window.location='admin.php?action=dashboard';</script>";
+        exit;
+    }
+    public function deleteTestimonial() {
+        if (!isset($_SESSION['admin'])) {
+            header("Location: admin.php?action=login");
+            exit;
+        }
+
+        if (isset($_GET['id']) && !empty($_GET['id'])) {
+            $id = trim($_GET['id']);
+            
+            try {
+                $this->model->deleteTestimonial($id);
+                echo "<script>alert('Testimoni berhasil dihapus!'); window.location='admin.php?action=dashboard';</script>";
+                exit;
+            } catch (PDOException $e) {
+                echo "<script>alert('Gagal menghapus testimoni! Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                exit;
+            }
+        }
+    }
+}
+?>
