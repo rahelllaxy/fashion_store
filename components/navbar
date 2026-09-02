@@ -1,0 +1,20 @@
+<nav>
+    <div class="logo">AETHER COLLECTIVE</div>
+    <ul>
+        <li><a href="index.php?filter=all#product">Semua Produk</a></li>
+        <li><a href="index.php?filter=kemeja-pria#product">Kemeja Pria</a></li>
+        <li><a href="index.php?filter=kemeja-wanita#product">Kemeja Wanita</a></li>
+        <li><a href="index.php?filter=parfum#product">Parfum</a></li>
+        
+        <li><a href="index.php#home">Home</a></li>
+        <li><a href="index.php#about">About</a></li>
+        <li><a href="index.php#review">Review</a></li>
+        <li><a href="index.php#lokasi">Lokasi</a></li>
+        
+        <li style="margin-left: 10px;">
+            <a href="admin.php" style="background: transparent; color: white; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: normal; border: 1px solid white; transition: 0.3s; text-decoration: none; white-space: nowrap;">
+                Admin
+            </a>
+        </li>
+    </ul>
+</nav>
