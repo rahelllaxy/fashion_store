@@ -1,0 +1,28 @@
+<footer id="lokasi" style="background: #0a0a0a; color: white; text-align: center; padding: 60px 20px 30px;">
+    <div style="max-width: 900px; margin: 0 auto; padding-bottom: 20px;">
+        <h2 style="margin-bottom: 20px; font-size: 32px;">Contact & Lokasi</h2>
+        <p style="font-size: 18px; margin-bottom: 10px;">📞 WhatsApp: +62 812-3456-7890</p>
+        <p style="font-size: 18px; margin-bottom: 30px;">✉️ Email: hello@aethercollective.com</p>
+
+        <p style="font-size: 18px; line-height: 1.6; color: #ccc; margin-bottom: 25px;">
+            📍 Jl. P.b. Sudirman Gg. I No.14, Patemon, Blindungan, Kec. Bondowoso, Kabupaten Bondowoso, Jawa Timur 68291
+        </p>
+
+        <div style="border-radius: 10px; overflow: hidden; border: 2px solid #333; box-shadow: 0 5px 15px rgba(255,255,255,0.05);">
+            <iframe 
+                width="100%" 
+                height="350" 
+                frameborder="0" 
+                scrolling="no" 
+                marginheight="0" 
+                marginwidth="0" 
+                src="https://maps.google.com/maps?q=Jl.+P.b.+Sudirman+Gg.+I+No.14,+Patemon,+Blindungan,+Kec.+Bondowoso&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                style="display: block;">
+            </iframe>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; color: #777; font-size: 16px;">
+        © 2026 AETHER COLLECTIVE
+    </div>
+</footer>
