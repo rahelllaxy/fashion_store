@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Produk - AETHER ADMIN</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: #111; padding: 30px; border-radius: 10px; border: 1px solid #222; width: 100%; max-width: 500px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 20px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; border-radius: 4px; }
+        button { width: 100%; padding: 12px; background: white; color: black; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 4px; margin-bottom: 10px; }
+        button:hover { background: #ddd; }
+        .btn-cancel { background: #333; color: white; text-align: center; display: block; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: bold; }
+        .btn-cancel:hover { background: #444; }
+        label { font-size: 14px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 style="margin-top: 0; text-align: center;">EDIT PRODUK</h2>
+    <form action="admin.php?action=update" method="POST" enctype="multipart/form-data">
+        
+        <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+        
+        <label>Nama Produk</label>
+        <input type="text" name="name" value="<?= htmlspecialchars($product['name']) ?>" required>
+        
+        <label>Kategori</label>
+        <select name="category">
+            <option value="kemeja-pria" <?= $product['category'] == 'kemeja-pria' ? 'selected' : '' ?>>Kemeja Pria</option>
+            <option value="kemeja-wanita" <?= $product['category'] == 'kemeja-wanita' ? 'selected' : '' ?>>Kemeja Wanita</option>
+            <option value="parfum" <?= $product['category'] == 'parfum' ? 'selected' : '' ?>>Parfum</option>
+        </select>
+        
+        <label>Harga (Rp)</label>
+        <input type="number" name="price" value="<?= htmlspecialchars($product['price']) ?>" required>
+        
+        <label>Link Shopee</label>
+        <input type="text" name="shopee" value="<?= htmlspecialchars($product['shopee']) ?>" required>
+        
+        <label>Ganti Gambar (Opsional - Biarkan kosong jika tidak ingin ganti)</label>
+        <br><br>
+        <img src="<?= htmlspecialchars($product['image']) ?>" style="width: 100px; border-radius: 4px; margin-bottom: 10px;">
+        <input type="file" name="image_file">
+        
+        <button type="submit">SIMPAN PERUBAHAN</button>
+        <a href="admin.php?action=dashboard" class="btn-cancel">BATAL</a>
+    </form>
+</div>
+
+</body>
+</html>
